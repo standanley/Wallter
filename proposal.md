@@ -14,7 +14,7 @@ Daniel is in charge of:
 - Electrical design
 - Designing laser cut and/or 3D printed parts
 
-TODO Jake and Michelle split up software? doesn't have to be set in stone, also feel free to add to / subtract from my responsibilities
+TODO Jake and Michelle split up software? doesn't have to be set in stone, also feel free to add to / subtract from my responsibilities  
 svg -> paths  
 paths -> string lengths  
 What order to do paths (out->in to overcome friction)  
@@ -32,7 +32,21 @@ There are many homemade wall bots online, but none of them seem to have multiple
 TODO Getting the right pressure of the pen on the wall? precision?
 
 ## Milestones
-TODO
+1. Preliminary design for version 1
+2. Order parts
+3. Mechanical design
+4. Test all electrical parts before assembly
+5. Laser cut and/or 3D print parts
+6. Mechanical assembly
+7. Bare-bones drawing, as a proof of concept
+8. Software that can do SVG -> drawing  
+  a. SVG -> Paths  
+  b. Intelligent ordering and direction of paths  
+  c. Paths -> Cable lengths  
+  d. Move cable lengths onto the Arduino over Bluetooth  
+  e. Cable lengths -> Motor steps  
+9. Are we happy with the precision? Maybe iterate on parts of design
+10. Awesome art!
 
 ## Parts List
 - Motors
