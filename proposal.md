@@ -18,20 +18,21 @@ Michelle is in charge of:
 - svg -> paths  
 - paths -> string lengths  
 
-TODO The rest below could leave to Jake? The bluetooth thing could also be an "all" responsibility
+Jake is in charge of:
+- What order to do paths (out->in to overcome friction)  
+- string lengths -> motor steps  
+- How to move data onto the arduino (we have 2-way text over bluetooth)  
 
-What order to do paths (out->in to overcome friction)  
-string lengths -> motor steps  
-How to move data onto the arduino (we have 2-way text over bluetooth)  
+Note that responsibilities may move around as we continue to develop the robot, and optimizing the robot once we've created the working version.
 
 ## What do you want to be able to make?
-TODO Vertical plotter capable of switching between colors
+Vertical plotter capable of covering a fairly large space, switching between colors, pretty-good (as good as we can make it) precision, & ideally having quick set up time.
 
 ## What is innovative about this proposal?
-There are many homemade wall bots online, but none of them seem to have multiple colors. The kickstarter robot Scribit could do up to 4 markers, but ours should be able to do more with fewer moving parts.
+There are many homemade wall bots online, but even ones with multiple colors seem fairly limited in the range of colors they allow.  Furthermore, they seem less precise than one might want (e.g. for transitioning a line from one color into another smoothly). The kickstarter robot Scribit could do up to 4 markers, but ours should be able to do more with fewer moving parts.
 
 ## What do you think will be the hardest part of the project?
-Getting the right pressure of the pen on the wall and minimizing shutters/sways to achieve high precision.
+Getting the right pressure of the pen on the wall and minimizing shutters/sways to achieve high precision (e.g. minimizing friction, correcting for predictable errors where possible (e.g. near edge of canvas lateral force by strings may be weak), and minimizing other sources of error, such as thread spooling on top of itself & changing the distance one "step" of rotation moves the drawing head)
 
 ## Milestones
 1. Preliminary design for version 1
