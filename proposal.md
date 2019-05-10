@@ -73,3 +73,6 @@ Getting the right pressure of the pen on the wall and minimizing shutters/sways 
 - Cord (fishing line? Thread?)
 - Linear slide / rack & pinion / lead screw for pushing off of wall
   - We will ask for hep on this one
+  
+## References
+- http://makerblock.com/2013/03/ideal-qualities-in-a-drawing-robot-pen-holder/
