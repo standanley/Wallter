@@ -14,22 +14,24 @@ Daniel is in charge of:
 - Electrical design
 - Designing laser cut and/or 3D printed parts
 
-TODO Jake and Michelle split up software? doesn't have to be set in stone, also feel free to add to / subtract from my responsibilities  
-svg -> paths  
-paths -> string lengths  
+Michelle is in charge of:
+- svg -> paths  
+- paths -> string lengths  
+
+TODO The rest below could leave to Jake? The bluetooth thing could also be an "all" responsibility
+
 What order to do paths (out->in to overcome friction)  
 string lengths -> motor steps  
 How to move data onto the arduino (we have 2-way text over bluetooth)  
-Are there more hardware concerns I'm forgetting about?
 
 ## What do you want to be able to make?
-TODO
+TODO Vertical plotter capable of switching between colors
 
 ## What is innovative about this proposal?
 There are many homemade wall bots online, but none of them seem to have multiple colors. The kickstarter robot Scribit could do up to 4 markers, but ours should be able to do more with fewer moving parts.
 
 ## What do you think will be the hardest part of the project?
-TODO Getting the right pressure of the pen on the wall? precision?
+Getting the right pressure of the pen on the wall and minimizing shutters/sways to achieve high precision.
 
 ## Milestones
 1. Preliminary design for version 1
