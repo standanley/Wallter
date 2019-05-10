@@ -2,24 +2,49 @@
 
 Daniel Stanley, Jake McKinnon, Michelle Wan
 
+## Responsibilities
+
+Everyone will contribute to:
+- Mechanical construction (because none of us have much experience with that)
+- Incremental redesign of whatever fails on Version 1 (because that's hard to plan for)
+- Making art! (because that's the whole point!)
+
+Daniel is in charge of:
+- Choosing parts
+- Electrical design
+- Designing laser cut and/or 3D printed parts
+
+TODO Jake and Michelle split up software? doesn't have to be set in stone, also feel free to add to / subtract from my responsibilities
+svg -> paths  
+paths -> string lengths  
+What order to do paths (out->in to overcome friction)  
+string lengths -> motor steps  
+How to move data onto the arduino (we have 2-way text over bluetooth)  
+Are there more hardware concerns I'm forgetting about?
+
 ## What do you want to be able to make?
+TODO
 
 ## What is innovative about this proposal?
 There are many homemade wall bots online, but none of them seem to have multiple colors. The kickstarter robot Scribit could do up to 4 markers, but ours should be able to do more with fewer moving parts.
 
 ## What do you think will be the hardest part of the project?
-Getting the right pressure of the pen on the wall.
+TODO Getting the right pressure of the pen on the wall? precision?
 
-# Parts List
+## Milestones
+TODO
+
+## Parts List
 - Motors
   - Most likely 28BYJ-48 stepper motors because they are light and super cheap
 - Motor controllers
   - Typically 28BYJ-48 motors come with a ULN2003 controller, so we'll probably use those
 - Random wires for connecting motor and controllers
 - Arduino
-  - Caution: the ULN2003 controllers take 
+  - Caution: the ULN2003 controllers take 4 digital signals to drive, and Arduino Uno only has 12 digital outputs after serial communication. We either need a bigger Arduino or maybe we can use the stepper motor shield from the Tbot, modified for 6-wire steppers... 
 - Battery
   - Probably a 7.4V rechargeable battery meant for an RC car or plane
+  - Maybe we also want a long wired connection so we don't have to pause debugging every time the battery dies
 - Bluetooth Arduino dongle HC-05 (<$10 on amazon)
   - Lets us send text wirelessly from python (or whatever) on a laptop to the Arduino
 - Acrylic for laser cutter 
