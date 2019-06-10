@@ -108,7 +108,7 @@ def quick_transform(info, x, y):
 
 	lengthl = math.sqrt((xpos-left[0])**2 + (ypos-left[1])**2)
 	lengthr = math.sqrt((xpos-right[0])**2 + (ypos-right[1])**2)
-	return lengthl, lengthr
+	return lengthr, lengthl
 
 
 if __name__ == '__main__':

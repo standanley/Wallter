@@ -31,8 +31,8 @@
 // Set these variables to match your setup                                  ////
 ////////////////////////////////////////////////////////////////////////////////
 // step parameters                                                          ////
-const float stepSize[2] = {.003, 0.003}; // mm per step [x, y]              ////
-const long fastDelay[2] = {50, 50}; // determines movement speed by            ////
+const float stepSize[2] = {.0002, 0.0002}; // mm per step [x, y]              ////
+const long fastDelay[2] = {15, 15}; // determines movement speed by            ////
 //const long slowDelay[2] = {100, 200}; // delaying milliseconds after each step   ////
 // enable and phase pins for each motor                                     ////
 
@@ -42,30 +42,20 @@ const long fastDelay[2] = {50, 50}; // determines movement speed by            /
 #define X_DIR     5 
 #define Y_DIR     6
 #define Z_DIR     7
-//#define W_DIR   -1
+#define A_DIR    13
 
 //Step pins
 #define X_STP     2
 #define Y_STP     3 
 #define Z_STP     4 
-//#define W_STP   -1     
+#define A_STP   12   
 
-// z axis control pins                                                      ////
-const long uppin = 4;                                                        ////
-const long downpin = 5;                                                      ////
-// for breadboard version
-//const long uppin = 7;                                                        ////
-//const long downpin = 8;                                                      ////
-// limit pins                                                               ////
-const boolean hasLimits = false;                                            ////
-const long xlimitPin = 2; // If you have enough pins and want limit switches ////
-const long ylimitPin = 3;                                                    ////
 // the hc06 rate
 #define SRATE 9600
 
 
 NeoSWSerial hc06(0,1);
-
+//Serial hc06 = Serial.begin();
 
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
@@ -73,12 +63,8 @@ NeoSWSerial hc06(0,1);
 // the current position
 float posmm[2];
 long poss[2];
-// the current motor states
-long mstate[2]; // 0=+off 1=+- 2=off- 3=-- 4=-off 5=-+ 6=off+ 7=++
 // motor speed delay
-long useDelay[2];
-// if it is touching the limits
-volatile boolean xlimit, ylimit;
+long useDelay[4];
 
 // used by the drawing function
 long xSteps, ySteps;
@@ -101,68 +87,45 @@ void setup(){
   pinMode(X_DIR, OUTPUT); pinMode(X_STP, OUTPUT);
   pinMode(Y_DIR, OUTPUT); pinMode(Y_STP, OUTPUT);
   pinMode(Z_DIR, OUTPUT); pinMode(Z_STP, OUTPUT);
-  // TODO W motor?
+  pinMode(A_DIR, OUTPUT); pinMode(A_STP, OUTPUT);
 
   pinMode(EN, OUTPUT);
   digitalWrite(EN, LOW);
-  
-  pinMode(uppin, OUTPUT);
-  pinMode(downpin, OUTPUT);
 
   // LED
   pinMode(13, OUTPUT);
   
-  if(hasLimits){
-    pinMode(xlimitPin, OUTPUT);
-    pinMode(ylimitPin, OUTPUT);
-  }
   
   // put both motors in state 0 = +off
   digitalWrite(X_STP, LOW);
   digitalWrite(Y_STP, LOW);
   digitalWrite(Z_STP, LOW);
   
-  
-  digitalWrite(uppin, LOW);
-  digitalWrite(downpin, LOW);
   delay(500);
+
   
   useDelay[0] = fastDelay[0];
   useDelay[1] = fastDelay[1];
+  useDelay[2] = 3000;
+  useDelay[3] = 1000;
+
+  /*
+Serial.println("A");
+  for(int i=0; i<341*8; i++){
+      oneStep(3, -1);
+    }
+Serial.println("B");
+  */
   
   // initialize the numbers
-  posmm[0] = 1200.0;
-  posmm[1] = 1200.0;
-  poss[0] = 0;
-  poss[1] = 0;
-  xlimit = false;
-  ylimit = false;
+  posmm[0] = 889.0;
+  posmm[1] = 889.0;
   
-  // for limit switches
-  if(hasLimits){
-    attachInterrupt(0, hitXLimit, CHANGE);
-    attachInterrupt(1, hitYLimit, CHANGE);
-  }
 
   // set up the hc06 stuff
   hc06.begin(SRATE);
   started = false;
   zdown = true;
-  
-  //if you have limit switches
-  if(hasLimits){
-    goHome();
-  }
-  
-  posmm[0] = 0.0;
-  posmm[1] = 0.0;
-  poss[0] = 0;
-  poss[1] = 0;
-  
-  //if you have limit switches
-  if(hasLimits){
-    findCenter();
-  }
   
   // wait for processing to connect
   while(!hc06.available()){
@@ -173,6 +136,7 @@ void setup(){
     }
   }
   if(hc06.read() == '#'){
+    delay(1000);
     hc06.write('@');
     ////Serial.println("Did the response\n");
   } else {
@@ -206,24 +170,24 @@ void loop() {
     // drawing finished
     started = false;
     raisePen();
-    drawLine(0.0, 0.0);
-    posmm[0] = 0.0;
-    posmm[1] = 0.0;
+    //drawLine(1200.0, 1200.0);
+    //posmm[0] = 1200.0;
+    //posmm[1] = 1200.0;
     poss[0] = 0;
     poss[1] = 0;
   }else if(c == 'A'){
     // raise pen
-    if(zdown){
+    //if(zdown){
       raisePen();
-      zdown = false;
-    }
+      //zdown = false;
+    //}
     hc06.write('A');
   }else if(c == 'Z'){
     // lower pen
-    if(!zdown){
+    //if(!zdown){
       lowerPen();
-      zdown = true;
-    }
+      //zdown = true;
+    //}
     hc06.write('Z');
   }else if(c == 'L'){
     // if there is some hc06 data, read it, parse it, use it
@@ -298,9 +262,14 @@ void loop() {
     //Serial.println("Done moving");
     hc06.write('L');
 
-  /*}
-  else if (abc){
+  }
+  else if (c == 'C'){
+    for(int i=0; i<341*8; i++){
+      oneStep(3, -1);
+    }
+    hc06.write('C');
 
+/*
   boolean complete = false;
     char tmpchar;
     while(!hc06.available()){
@@ -344,9 +313,9 @@ long pen_delay = 300;
 void raisePen(){
   digitalWrite(Z_DIR, HIGH);
   for(int i=0; i<pen_range; i++){
-    digitalWrite(uppin, HIGH);
+    digitalWrite(Z_STP, HIGH);
     delayMicroseconds(pen_delay);
-    digitalWrite(uppin, LOW);
+    digitalWrite(Z_STP, LOW);
     delayMicroseconds(pen_delay);
   }
 }
@@ -354,9 +323,9 @@ void raisePen(){
 void lowerPen(){
   digitalWrite(Z_DIR, LOW);
   for(int i=0; i<pen_range; i++){
-    digitalWrite(uppin, HIGH);
+    digitalWrite(Z_STP, HIGH);
     delayMicroseconds(pen_delay);
-    digitalWrite(uppin, LOW);
+    digitalWrite(Z_STP, LOW);
     delayMicroseconds(pen_delay);
   }
 }
@@ -405,14 +374,6 @@ void drawLine(float x2, float y2){
 
   if(xSteps*xdir > ySteps*ydir){
     while(dx < xSteps*xdir){
-      if(xlimit || ylimit){
-        // we hit a limit. back off the switch, and return
-        oneStep(0, -xdir);
-        oneStep(0, -xdir);
-        oneStep(1, -ydir);
-        oneStep(1, -ydir);
-        return;
-      }
       // move one x step at a time
       dx++;
       oneStep(0, xdir);
@@ -425,14 +386,6 @@ void drawLine(float x2, float y2){
   }
   else{
     while(dy < ySteps*ydir){
-      if(xlimit || ylimit){
-        // we hit a limit. back off the switch, and return
-        oneStep(0, -xdir);
-        oneStep(0, -xdir);
-        oneStep(1, -ydir);
-        oneStep(1, -ydir);
-        return;
-      }
       // move one y step at a time
       dy++;
       oneStep(1, ydir);
@@ -458,6 +411,7 @@ void oneStep(long m, long dir){
     case 0:
       dirPin = X_DIR;
       stepPin = X_STP;
+      dir *= -1;
       break;
     case 1:
       dirPin = Y_DIR;
@@ -467,8 +421,14 @@ void oneStep(long m, long dir){
       dirPin = Z_DIR;
       stepPin = Z_STP;
       break;
+    case 3:
+      dirPin = A_DIR;
+      stepPin = A_STP;
+      break;
   }
-  digitalWrite(dirPin, dir);
+
+  int dir2 = (dir==1) ? 0 : 1;
+  digitalWrite(dirPin, dir2);
   digitalWrite(stepPin, HIGH);
   delayMicroseconds(useDelay[m]/2); 
   digitalWrite(stepPin, LOW);
@@ -482,78 +442,3 @@ void oneStep(long m, long dir){
 
 
 
-
-///////////////////////////////////////////////////////////////////////////
-// these functions are for limit switches only. I have not tested them
-///////////////////////////////////////////////////////////////////////////
-void goHome(){
-  // just go in the -x and -y directions until you hit the limit switches
-  useDelay[0] = fastDelay[0];
-  useDelay[1] = fastDelay[1];
-  while(!xlimit && !ylimit){
-    oneStep(0, -1);
-    oneStep(1, -1);
-  }
-  while(!xlimit){
-    oneStep(0, -1);
-  }
-  while(!ylimit){
-    oneStep(1, -1);
-  }
-  // back off the switches
-  oneStep(0, 1);
-  oneStep(1, 1);
-  oneStep(0, 1);
-  oneStep(1, 1);
-}
-
-void findCenter(){
-  // travel over the full range then go to the center
-  goHome();
-  useDelay[0] = fastDelay[0];
-  useDelay[1] = fastDelay[1];
-  while(!xlimit && !ylimit){
-    oneStep(0, 1);
-    oneStep(1, 1);
-  }
-  while(!xlimit){
-    oneStep(0, 1);
-  }
-  while(!ylimit){
-    oneStep(1, 1);
-  }
-
-  long maxx = poss[0];
-  long maxy = poss[1];
-  while(poss[0] > maxx/2 && poss[1] > maxy/2){
-    oneStep(0, -1);
-    oneStep(1, -1);
-  }
-  while(poss[0] > maxx/2){
-    oneStep(0, -1);
-  }
-  while(poss[1] > maxy/2){
-    oneStep(1, -1);
-  }
-}
-
-
-void hitXLimit(){
-  if(digitalRead(xlimitPin) == HIGH){
-    xlimit = true;
-  }
-  else{
-    xlimit = false;
-  }
-}
-
-void hitYLimit(){
-  if(digitalRead(ylimitPin) == HIGH){
-    ylimit = true;
-  }
-  else{
-    ylimit = false;
-  }
-}
-////////////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////////////

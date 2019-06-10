@@ -3,13 +3,17 @@ import time
 
 
 def start():
-	ser = serial.Serial('COM8', baudrate=9600, timeout=.5, parity=serial.PARITY_NONE)  # open serial port
+	ser = serial.Serial('COM10', baudrate=9600, timeout=.5, parity=serial.PARITY_NONE)  # open serial port
 	print(ser.name)         # check which port was really used
 	
+	time.sleep(5)
 	# once to get through setup
 	ser.write(b'#')
+	ser.flush()
 
 	#ser.write(b'#')
+
+	print('wrote #, waiting')
 	
 	# once to acknowledge
 	response = wait_for_response(ser)
@@ -24,11 +28,17 @@ def start():
 	return ser
 
 def wait_for_response(ser):
+	count = 0
 	while not ser.in_waiting:
+		count += 1
 		#print('waiting')
 		time.sleep(0.01)
+		if count == 1000:
+			#break
+			pass
 	#time.sleep(1)
 	response = ser.read()
+	#print('response', response)
 	return response
 
 def stop(ser):
@@ -46,13 +56,18 @@ def pen_down(ser):
 	if response.decode('utf-8') != 'Z':
 		print('Issue putting pen down')
 
+def next_color(ser):
+	ser.write(b'C')
+	response = wait_for_response(ser)
+	if response.decode('utf-8') != 'C':
+		print('Issue putting pen down')
+
 def write_float(ser, x):
 	int1 = str(int(x*10000))+'.'
 	ser.write(int1.encode('utf-8'))
-	#print('Just sent float, waiting for response')
+	print('Just sent float', x, ', waiting for response')
 	response = wait_for_response(ser)
-
-	#print(response.decode('utf-8'))
+	print('got response, ', response.decode('utf-8'))
 	#response = response.decode('utf-8')
 	#print('a', response)
 	#response = response[-3:-1]

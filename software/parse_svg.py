@@ -26,6 +26,7 @@ def parse(text):
 	def finish_path():
 		#print(parse.current_path)
 		if parse.current_path != []:
+			#print('finishing path')
 			paths.append(parse.current_path.copy())
 			colors.append(current_color)
 			parse.current_path = []
@@ -50,9 +51,11 @@ def parse(text):
 			elif parse.token[:2] == 'd=':
 				STATE = 'path'
 				first_in_path = True
+			elif parse.token[:3] == 'id=':
+				adv()
 			else:
 				print('unknown header token', parse.token)
-				crash
+				#crash
 
 		elif STATE == 'path':
 			#print('P')
@@ -102,13 +105,27 @@ def parse(text):
 				parse.style = 'L'
 				adv()
 			elif parse.token == 'z' or parse.token == 'Z':
-				parse.current_path.append(parse.current_path[0])
-				finish_path()
+				parse.current_path.append(parse.current_path[0].copy())
+				#finish_path()
 				parse.style = None
 			elif parse.token[:2] == 'id':
+				adv()
+				pass
+			elif parse.token[:2] == '/>':
 				finish_path()
+				print('NEW THING')
 				parse.style = None
 				STATE = 'looking'
+			elif parse.token[:5] == 'style':
+				parse.style = None
+				adv()
+				print('GOT STYLE LATER: parse this: ', parse.token)
+				current_color = parse.token
+			else:
+				try:
+					float(parse.token)
+				except:
+					print('UNKNOWN', parse.token)
 
 			#print('style', parse.style)
 
@@ -167,6 +184,7 @@ def parse(text):
 	by = (max(ys) + min(ys))/2
 
 	a = max(ax, bx)
+	a = a*1.5 # scale down!
 
 	clean_paths = []
 	for path in paths:
@@ -175,10 +193,14 @@ def parse(text):
 		for x,y in path:
 			clean_path.append([(x-bx)/a+.5, (y-by)/a+.5])
 		clean_paths.append(clean_path)
-		print(clean_path)
+		#print(clean_path[:5])
 
+	#with open('tree.txt', 'w') as f:
+	#	f.write(str(clean_paths))
+	#exit()
 
 	#print(clean_paths)
+
 	return clean_paths, colors
 
 if __name__ == '__main__':
