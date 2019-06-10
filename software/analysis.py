@@ -8,8 +8,10 @@ def linspace(a, b, n):
 
 class Position():
 	dist = 10	# distance between string attachments on wall
-	anchor1 = (-.25, .25)	# x,y of string anchor relative to COM
-	anchor2 = (.25, .25)
+	#anchor1 = (-.25, .25)	# x,y of string anchor relative to COM
+	#anchor2 = (.25, .25)
+	anchor1 = (-.5, .5)	# x,y of string anchor relative to COM
+	anchor2 = (.5, .5)
 	anchor1 = (*anchor1, (anchor1[0]**2+anchor1[1]**2)**.5, math.atan2(anchor1[1], anchor1[0]))
 	anchor2 = (*anchor2, (anchor2[0]**2+anchor2[1]**2)**.5, math.atan2(anchor2[1], anchor2[0]))
 	weight = -1
@@ -95,37 +97,53 @@ class Position():
 		print('x=%.2f\ty=%.2f\tr=%.2f\tt=%.2f'%(self.x, self.y, self.r, self.get_torque()))
 
 
-test = Position(5, -3, 0)
-test.print()
+def quick_transform(info, x, y):
+	# if our image is (0-dx, 0-dy) with 0,0 in the upper left, 
+	# cables are at left[0],left[1], and right is at right[0],right[1]
 
-test2 = Position(3, -3, 0)
-test2.print()
+	dx, dy, left, right = info
 
-test3 = Position(3, -3)
-test3.print()
+	xpos = x*dx
+	ypos = y*dy
 
-
-
-
-w, h = 640*2, 480*2
-pygame.init()
-screen = pygame.display.set_mode((w, h))
-screen.fill((255, 255, 255))
+	lengthl = math.sqrt((xpos-left[0])**2 + (ypos-left[1])**2)
+	lengthr = math.sqrt((xpos-right[0])**2 + (ypos-right[1])**2)
+	return lengthl, lengthr
 
 
-for x in linspace(.25, 9.75, 20):
-	for y in linspace(0, -9.75, 20):
-		pos = Position(x, y)
-		pos.draw(screen)
+if __name__ == '__main__':
+
+	test = Position(5, -3, 0)
+	test.print()
+
+	test2 = Position(3, -3, 0)
+	test2.print()
+
+	test3 = Position(3, -3)
+	test3.print()
 
 
-pygame.draw.aaline(screen, (0, 255, 0), (0, 0), (50, 100))
 
 
-pygame.display.flip()
-running = True
-while running:
-	for event in pygame.event.get():
-		if event.type in (QUIT, KEYDOWN):
-			running = False
+	w, h = 640*2, 480*2
+	pygame.init()
+	screen = pygame.display.set_mode((w, h))
+	screen.fill((255, 255, 255))
+
+
+	for x in linspace(.25, 9.75, 10):
+		for y in linspace(0, -9.75, 10):
+			pos = Position(x, y)
+			pos.draw(screen)
+
+
+	#pygame.draw.aaline(screen, (0, 255, 0), (0, 0), (50, 100))
+
+
+	pygame.display.flip()
+	running = True
+	while running:
+		for event in pygame.event.get():
+			if event.type in (QUIT, KEYDOWN):
+				running = False
 
